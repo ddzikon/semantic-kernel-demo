@@ -5,8 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication(scanBasePackages = { "agent", "app" })
-@ComponentScan(basePackages = { "org.example.agent", "org.example.app" })
+@SpringBootApplication(scanBasePackages = { "org.example.agent", "org.example.app" })
 public class Main {
 
     public static void main(String[] args) {
