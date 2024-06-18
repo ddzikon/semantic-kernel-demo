@@ -1,5 +1,5 @@
 # Semantic Kernel Demo
-Example implementations of [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview) ([Semantic Kernel repository](https://github.com/microsoft/semantic-kernel/tree/main)):
+Example implementations of [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview) ([Semantic Kernel repository](https://github.com/microsoft/semantic-kernel/tree/main)).
 ## How to run
 Each demo app requires OpenAI API key in order to talk with ChatGPT.  
 Provide it as an environment variable `OPENAI_API_KEY`.
