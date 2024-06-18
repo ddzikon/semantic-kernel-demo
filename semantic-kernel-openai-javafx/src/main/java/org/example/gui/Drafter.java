@@ -1,8 +1,6 @@
 package org.example.gui;
 
-import com.google.inject.Binding;
 import com.google.inject.Inject;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -33,8 +33,6 @@ public class Agent {
     private final Repository repository;
 
     public String askGpt(String question) {
-        assert plugin != null;
-
         OpenAIAsyncClient openAIClient = new OpenAIClientBuilder()
                 .credential(new KeyCredential(OPENAI_API_KEY))
                 .buildAsyncClient();

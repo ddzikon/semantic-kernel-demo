@@ -17,7 +17,8 @@ public class Plugin {
     @DefineKernelFunction(
             name = "getPersonInfo",
             description = "Get info for the person by person's name.",
-            returnType = "string")
+            returnType = "string"
+    )
     public String getPersonInfo(String name) {
         return repository.findByName(name).getInfo();
     }
