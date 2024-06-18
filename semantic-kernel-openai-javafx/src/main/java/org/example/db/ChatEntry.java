@@ -1,6 +1,5 @@
 package org.example.db;
 
-import com.microsoft.semantickernel.services.chatcompletion.AuthorRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

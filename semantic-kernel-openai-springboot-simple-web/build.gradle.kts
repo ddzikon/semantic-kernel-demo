@@ -21,9 +21,6 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     implementation("org.flywaydb:flyway-core")
 
-//    implementation("org.springframework.ai:spring-ai-bom:1.0.0-M1")
-//    implementation("org.springframework.ai:spring-ai-ollama-spring-boot-starter")
-
     implementation("com.microsoft.semantic-kernel:semantickernel-api:1.1.5")
     implementation("com.microsoft.semantic-kernel:semantickernel-bom:1.1.5")
     implementation("com.microsoft.semantic-kernel:semantickernel-aiservices-openai:1.1.5")
@@ -32,6 +29,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+springBoot {
+    mainClass = "org.example.Main"
 }
 
 tasks.test {

@@ -5,7 +5,7 @@ CREATE TABLE Person(
 );
 
 INSERT INTO Person(name, info)
-VALUES ('Areczek', 'Zarobas');
+VALUES ('Areczek', 'Intern');
 
 INSERT INTO Person(name, info)
 VALUES ('Miro', 'Handlarz');

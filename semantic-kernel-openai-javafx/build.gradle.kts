@@ -1,4 +1,5 @@
 plugins {
+    application
     id("java")
     id("io.freefair.lombok") version "8.6"
     id("org.openjfx.javafxplugin") version "0.1.0"
@@ -12,7 +13,6 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     implementation("org.openjfx:javafx:22.0.1")
 
@@ -22,8 +22,6 @@ dependencies {
     implementation("org.hibernate:hibernate:3.5.4-Final")
     implementation("org.hibernate:hibernate-core:6.5.2.Final")
     implementation("org.flywaydb:flyway-core:10.15.0")
-
-    implementation("org.yaml:snakeyaml:2.2")
 
     implementation("com.microsoft.semantic-kernel:semantickernel-api:1.1.5")
     implementation("com.microsoft.semantic-kernel:semantickernel-bom:1.1.5")
@@ -39,6 +37,10 @@ dependencies {
 javafx {
     version = "22.0.1"
     modules = listOf( "javafx.controls" )
+}
+
+application {
+    mainClass = "org.example.Main"
 }
 
 tasks.test {

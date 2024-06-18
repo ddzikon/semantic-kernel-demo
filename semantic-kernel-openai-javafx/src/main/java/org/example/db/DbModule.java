@@ -36,8 +36,8 @@ public class DbModule extends AbstractModule {
         configuration.setProperty("hibernate.default_schema", DB_SCHEMA);
         configuration.setProperty("hibernate.hbm2ddl.auto", "validate");
 
-        configuration.setProperty("show_sql", "true");
-        configuration.setProperty("hibernate.connection.pool_size", "10");
+//        configuration.setProperty("show_sql", "true");
+//        configuration.setProperty("hibernate.connection.pool_size", "10");
         return configuration.buildSessionFactory();
     }
 
