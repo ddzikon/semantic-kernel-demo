@@ -1,5 +1,6 @@
 package org.example.ai;
 
+import lombok.NoArgsConstructor;
 import org.example.db.Person;
 import org.example.db.Repository;
 import org.springframework.ai.chat.model.ChatModel;
@@ -40,14 +41,14 @@ public class ChatService {
         OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
                 .withModel("gpt-3.5-turbo")
                 .withFunction("myPersons")
-//                .withFunctionCallbacks(List.of(
-//                        new FunctionCallbackWrapper.Builder<>(__ -> repository.findAll())
-//                                .withName("getMyData")
-//                                .withDescription("Get my data.")
+                .withFunctionCallbacks(List.of(
+                        new FunctionCallbackWrapper.Builder<>(new MyFunction())
+                                .withName("myPersons")
+                                .withDescription("Get my data.")
 //                                .withResponseConverter(persons -> persons.stream().map(Person::toString).collect(Collectors.joining(", ")))
-//                                .build()
-//                        )
-//                )
+                                .build()
+                        )
+                )
                 .build();
 
 
@@ -56,13 +57,15 @@ public class ChatService {
         return chatModel.call(new Prompt(message, openAiChatOptions)).getResult().getOutput().getContent();
     }
 
-    private static class MyFunction implements Function<Object, String> {
+    private static class MyFunction implements Function<MyFunction.Request, String> {
 
         @Autowired
         private Repository repository;
 
+        public record Request(){}
+
         @Override
-        public String apply(Object o) {
+        public String apply(MyFunction.Request o) {
             return repository.findAll().stream()
                     .map(Person::toString)
                     .collect(Collectors.joining(", "));
@@ -74,7 +77,7 @@ public class ChatService {
 
         @Bean
         @Description("Get list of my persons")
-        public Function<Object, String> myPersons() {
+        public Function<MyFunction.Request, String> myPersons() {
             return new MyFunction();
         }
     }
