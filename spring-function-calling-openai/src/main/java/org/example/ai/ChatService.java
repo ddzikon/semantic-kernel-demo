@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,21 +41,26 @@ public class ChatService {
 
         OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
                 .withModel("gpt-3.5-turbo")
-                .withFunction("myPersons")
-                .withFunctionCallbacks(List.of(
-                        new FunctionCallbackWrapper.Builder<>(new MyFunction())
-                                .withName("myPersons")
-                                .withDescription("Get my data.")
-//                                .withResponseConverter(persons -> persons.stream().map(Person::toString).collect(Collectors.joining(", ")))
-                                .build()
-                        )
-                )
+//                .withFunction("myPersons")
+//                .withFunction("currentWeather")
+//                .withFunctionCallbacks(List.of(
+//                        new FunctionCallbackWrapper.Builder<>(new MyFunction())
+//                                .withName("myPersons")
+//                                .withDescription("Get my data.")
+////                                .withResponseConverter(persons -> persons.stream().map(Person::toString).collect(Collectors.joining(", ")))
+//                                .build(),
+//                        new FunctionCallbackWrapper.Builder<>(new MockWeatherService())
+//                                .withName("currentWeather")
+//                                .withDescription("Get the current weather in location")
+//                                .build()
+//                        )
+//                )
                 .build();
 
 
-        ChatModel chatModel = new OpenAiChatModel(openAiApi/*, openAiChatOptions*/);
+        ChatModel chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
 
-        return chatModel.call(new Prompt(message, openAiChatOptions)).getResult().getOutput().getContent();
+        return chatModel.call(new Prompt(message)).getResult().getOutput().getContent();
     }
 
     private static class MyFunction implements Function<MyFunction.Request, String> {

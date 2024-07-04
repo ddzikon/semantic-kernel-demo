@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Description;
 import java.util.List;
 import java.util.function.Function;
 
-//@Configuration
+@Configuration
 public class CallableFunctions {
 
 //    @Autowired
@@ -28,6 +28,14 @@ public class CallableFunctions {
         return FunctionCallbackWrapper.builder(__ -> repository.findAll())
                 .withName("getAllPersons")
                 .withDescription("Get all persons in local database")
+                .build();
+    }
+
+    @Bean
+    public FunctionCallback currentWeather() {
+        return new FunctionCallbackWrapper.Builder<>(new CurrentWeatherFunction())
+                .withName("currentWeather")
+                .withDescription("Get the current weather in location")
                 .build();
     }
 }
