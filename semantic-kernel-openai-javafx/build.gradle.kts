@@ -18,6 +18,8 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.5.6")
 
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+
     implementation("org.openjfx:javafx:22.0.2")
     implementation("org.openjfx:javafx-fxml:22.0.2")
 
