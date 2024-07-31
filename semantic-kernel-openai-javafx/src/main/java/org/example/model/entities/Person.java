@@ -1,4 +1,4 @@
-package org.example.db;
+package org.example.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,11 +17,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "chat_entry")
-public class ChatEntry {
+@Table(name = "person")
+public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String entry;
-    private String role;
+    private String name;
+    private String info;
 }

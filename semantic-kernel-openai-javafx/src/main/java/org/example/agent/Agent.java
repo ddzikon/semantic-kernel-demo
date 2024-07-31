@@ -14,11 +14,12 @@ import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionServic
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import com.microsoft.semantickernel.services.chatcompletion.ChatMessageContent;
 import lombok.RequiredArgsConstructor;
-import org.example.db.ChatEntry;
-import org.example.db.Repository;
+import lombok.extern.slf4j.Slf4j;
+import org.example.viewmodel.ChatEntryViewModel;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Agent {
     private static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
@@ -30,9 +31,11 @@ public class Agent {
     }
 
     private final Plugin plugin;
-    private final Repository repository;
+    private final ChatEntryViewModel chatEntryViewModel;
 
-    public String askGpt(String question) {
+    public String askGpt(String message) {
+        log.info("Generating message for the chat: {}", message);
+
         OpenAIAsyncClient openAIClient = new OpenAIClientBuilder()
                 .credential(new KeyCredential(OPENAI_API_KEY))
                 .buildAsyncClient();
@@ -49,21 +52,21 @@ public class Agent {
                 .withPlugin(kernelPlugin)
                 .build();
 
-        repository.storeEntry(ChatEntry.builder()
-                .role(AuthorRole.USER.name())
-                .entry(question)
-                .build()
-        );
-        List<ChatMessageContent> chatEntries = repository.findAllChatEntries().stream()
-                .map(chatEntry ->
-                        new ChatMessageContent(AuthorRole.valueOf(chatEntry.getRole()), chatEntry.getEntry()))
-                .toList();
+        chatEntryViewModel.storeChatEntry(AuthorRole.USER.name(), message);
+
+        List<ChatMessageContent> chatEntries = chatEntryViewModel.getAllChatEntries().values().stream()
+                .map(stringStringPair -> new ChatMessageContent(
+                                AuthorRole.valueOf(stringStringPair.getLeft()),
+                                stringStringPair.getRight()
+                        )
+                ).toList();
         ChatHistory chatHistory = new ChatHistory(chatEntries);
 
         InvocationContext invocationContext = InvocationContext.builder()
                 .withToolCallBehavior(ToolCallBehavior.allowAllKernelFunctions(true))
                 .build();
 
+        log.info("Sending message, waiting for response...");
         List<ChatMessageContent<?>> conversation = chatCompletionService.getChatMessageContentsAsync(
                 chatHistory,
                 kernel,
@@ -71,13 +74,12 @@ public class Agent {
         ).block();
 
         ChatMessageContent<?> chatResponse = conversation.get(conversation.size() - 1);
+        String chatResponseContent = chatResponse.getContent();
 
-        repository.storeEntry(ChatEntry.builder()
-                .role(chatResponse.getAuthorRole().name())
-                .entry(chatResponse.getContent())
-                .build()
-        );
+        log.info("Response received {}", chatResponse);
 
-        return chatResponse.getContent();
+        chatEntryViewModel.storeChatEntry(chatResponse.getAuthorRole().name(), chatResponseContent);
+
+        return chatResponseContent;
     }
 }

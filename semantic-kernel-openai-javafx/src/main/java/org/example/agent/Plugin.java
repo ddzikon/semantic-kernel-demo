@@ -4,23 +4,25 @@ import com.google.inject.Inject;
 import com.microsoft.semantickernel.semanticfunctions.annotations.DefineKernelFunction;
 import com.microsoft.semantickernel.semanticfunctions.annotations.KernelFunctionParameter;
 import lombok.RequiredArgsConstructor;
-import org.example.db.Person;
-import org.example.db.Repository;
+import lombok.extern.slf4j.Slf4j;
+import org.example.viewmodel.PersonViewModel;
 
-import java.util.stream.Collectors;
-
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Plugin {
 
-    private final Repository repository;
+    private final PersonViewModel personViewModel;
 
     @DefineKernelFunction(
             name = "getPersonInfo",
             description = "Get info for the person by person's name.",
             returnType = "string"
     )
-    public String getPersonInfo(String name) {
-        return repository.findByName(name).getInfo();
+    public String getPersonInfo(
+            @KernelFunctionParameter(name = "name", description = "Name of a person.") String name
+    ) {
+        log.info("getPersonInfo called with argument: name = {}", name);
+        return personViewModel.getPersonInfo(name);
     }
 
     @DefineKernelFunction(
@@ -29,7 +31,8 @@ public class Plugin {
             returnType = "string"
     )
     public String getAllPeople() {
-        return repository.findAll().stream().map(Person::toString).collect(Collectors.joining(", "));
+        log.info("getAllPeople called");
+        return personViewModel.getAllPeople();
     }
 
     @DefineKernelFunction(
@@ -41,7 +44,7 @@ public class Plugin {
             @KernelFunctionParameter(name = "name", description = "Name of a person.") String name,
             @KernelFunctionParameter(name = "info", description = "Info for a person.") String info
     ) {
-        final var person = Person.builder().name(name).info(info).build();
-        return repository.save(person).toString();
+        log.info("insertNewPerson called with arguments: name = {}, info = {}", name, info);
+        return personViewModel.insertNewPerson(name, info);
     }
 }
