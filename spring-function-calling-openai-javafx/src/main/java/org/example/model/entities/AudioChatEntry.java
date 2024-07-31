@@ -17,11 +17,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "person", schema = "test_schema")
-public class Person {
+@Table(name = "audio_chat_entry", schema = "test_schema")
+public class AudioChatEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    private String info;
+    private String entry;
 }
