@@ -3,7 +3,6 @@ package org.example.viewmodel;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import org.example.agent.Agent;
 import org.example.model.repositories.ChatEntryRepository;
 import org.example.model.repositories.PersonRepository;
 

@@ -21,7 +21,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class Agent {
+public class OpenAIAgent {
     private static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
 
     static {
@@ -30,7 +30,8 @@ public class Agent {
         }
     }
 
-    private final Plugin plugin;
+    private final PersonPlugin personPlugin;
+    private final WeatherPlugin weatherPlugin;
     private final ChatEntryViewModel chatEntryViewModel;
 
     public String askGpt(String message) {
@@ -45,11 +46,13 @@ public class Agent {
                 .withOpenAIAsyncClient(openAIClient)
                 .build();
 
-        KernelPlugin kernelPlugin = KernelPluginFactory.createFromObject(plugin, "plugin");
+        KernelPlugin kernelPersonPlugin = KernelPluginFactory.createFromObject(personPlugin, "personPlugin");
+        KernelPlugin kernelWeatherPlugin = KernelPluginFactory.createFromObject(weatherPlugin, "weatherPlugin");
 
         Kernel kernel = Kernel.builder()
                 .withAIService(ChatCompletionService.class, chatCompletionService)
-                .withPlugin(kernelPlugin)
+                .withPlugin(kernelPersonPlugin)
+                .withPlugin(kernelWeatherPlugin)
                 .build();
 
         chatEntryViewModel.storeChatEntry(AuthorRole.USER.name(), message);
