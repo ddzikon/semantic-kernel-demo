@@ -1,6 +1,5 @@
 package org.example.view;
 
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,17 +8,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.util.Callback;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.example.model.entities.Person;
-import org.example.viewmodel.AgentInteractor;
+import org.example.viewmodel.AudioChatEntryViewModel;
+import org.example.viewmodel.AudioChatServiceInteractor;
+import org.example.viewmodel.ChatServiceInteractor;
 import org.example.viewmodel.ChatEntryViewModel;
-import org.example.viewmodel.PersonViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,24 +28,24 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ViewController implements Initializable {
 
+    private final static String RECORD_BUTTON_OFF_TEXT = "Record";
+    private final static String RECORD_BUTTON_ON_TEXT = "Stop";
+
     @FXML
     private ListView<String> chatHistory;
     @FXML
-    private TableView<Person> personTable;
-    @FXML
-    private TableColumn<Person, Integer> personTableIdColumn;
-    @FXML
-    private TableColumn<Person, String> personTableNameColumn;
-    @FXML
-    private TableColumn<Person, String> personTableInfoColumn;
+    private ListView<String> audioChatHistory;
     @FXML
     private TextArea chatInput;
     @FXML
     private Button sendButton;
+    @FXML
+    private Button recordButton;
 
-    private final PersonViewModel personViewModel;
     private final ChatEntryViewModel chatEntryViewModel;
-    private final AgentInteractor agentInteractor;
+    private final ChatServiceInteractor chatServiceInteractor;
+    private final AudioChatEntryViewModel audioChatEntryViewModel;
+    private final AudioChatServiceInteractor audioChatServiceInteractor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,8 +55,19 @@ public class ViewController implements Initializable {
 
             // should it be handled through ViewModel?
             if (StringUtils.isNotBlank(message)) {
-                agentInteractor.askGpt(message);
+                chatServiceInteractor.askGpt(message);
                 chatInput.clear();
+            }
+        });
+
+        recordButton.setText(RECORD_BUTTON_OFF_TEXT);
+        recordButton.setOnAction(actionEvent -> {
+            if(recordButton.getText().equals(RECORD_BUTTON_OFF_TEXT)) {
+                recordButton.setText(RECORD_BUTTON_ON_TEXT);
+                audioChatServiceInteractor.startRecording();
+            } else {
+                recordButton.setText(RECORD_BUTTON_OFF_TEXT);
+                audioChatServiceInteractor.stopRecording();
             }
         });
 
@@ -67,11 +75,9 @@ public class ViewController implements Initializable {
         chatHistory.setSelectionModel(new NoSelectionModel<String>());
         chatHistory.setCellFactory(createListViewCellFactoryCallback());
 
-        personTableIdColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getId()));
-        personTableNameColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getName()));
-        personTableInfoColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getInfo()));
-
-        personTable.itemsProperty().bind(new SimpleObjectProperty<>(personViewModel.getPeopleStateProperty()));
+        audioChatHistory.setItems(audioChatEntryViewModel.getAudioChatHistoryProperty());
+        audioChatHistory.setSelectionModel(new NoSelectionModel<String>());
+        audioChatHistory.setCellFactory(createListViewCellFactoryCallback());
     }
 
     private static Callback<ListView<String>, ListCell<String>> createListViewCellFactoryCallback() {

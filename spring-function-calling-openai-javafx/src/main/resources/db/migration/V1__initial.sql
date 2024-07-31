@@ -12,6 +12,11 @@ CREATE TABLE IF NOT EXISTS test_schema.chat_entry(
     role VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS test_schema.audio_chat_entry(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    entry CHARACTER VARYING
+);
+
 INSERT INTO test_schema.person(name, info)
 VALUES ('Areczek', 'Stażysta');
 

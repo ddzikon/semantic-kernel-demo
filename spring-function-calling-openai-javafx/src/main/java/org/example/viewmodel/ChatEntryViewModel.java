@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
-import org.example.ai.ChatService;
 import org.example.model.entities.ChatEntry;
 import org.example.model.repositories.ChatEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;

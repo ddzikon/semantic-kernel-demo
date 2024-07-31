@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 // FIXME reorganise arch to avoid circular reference
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AgentInteractor {
+public class ChatServiceInteractor {
 
     private final ChatService chatService;
 
