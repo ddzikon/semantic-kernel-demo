@@ -6,12 +6,6 @@ plugins {
 
 group = "org.example"
 version = "unspecified"
-//
-//java {
-//    toolchain {
-//        languageVersion = JavaLanguageVersion.of(21)
-//    }
-//}
 
 repositories {
     mavenCentral()
