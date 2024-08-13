@@ -5,6 +5,11 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("org.hibernate.orm") version "6.5.2.Final"
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(22)
+    }
+}
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
@@ -43,7 +48,7 @@ dependencies {
 
 javafx {
     version = "22.0.1"
-    modules = listOf( "javafx.controls" )
+    modules = listOf( "javafx.controls", "javafx.fxml" )
 }
 
 application {
