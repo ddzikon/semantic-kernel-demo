@@ -6,15 +6,22 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class WeatherClient {
-    // FIXME provide api key from external sources
-    private static final String WEATHER_API_KEY = "70ffddb5a5f14f078cc91622241807";
+    private static final String WEATHER_API_KEY;
     private static final String CURRENT_WEATHER_URL = "http://api.weatherapi.com/v1/current.json";
+
+    static {
+        WEATHER_API_KEY = System.getenv("WEATHER_API_KEY");
+        if (StringUtils.isBlank(WEATHER_API_KEY)) {
+            throw new IllegalStateException("requires env var WEATHER_API_KEY");
+        }
+    }
 
     private final OkHttpClient client;
 
