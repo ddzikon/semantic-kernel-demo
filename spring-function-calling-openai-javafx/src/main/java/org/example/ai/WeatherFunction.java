@@ -3,6 +3,7 @@ package org.example.ai;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestClient;
 
 import java.util.function.Function;
@@ -10,12 +11,18 @@ import java.util.function.Function;
 @Slf4j
 class WeatherFunction implements Function<WeatherFunction.Request, WeatherFunction.Response> {
 
-    // FIXME provide api key from external sources
-    private static final String WEATHER_API_KEY = "70ffddb5a5f14f078cc91622241807";
+    private static final String WEATHER_API_KEY;
     private static final String CURRENT_WEATHER_URL = "http://api.weatherapi.com/v1/current.json";
 
     public record Request(String location) {}
     public record Response(String output) {}
+
+    static {
+        WEATHER_API_KEY = System.getenv("WEATHER_API_KEY");
+        if (StringUtils.isBlank(WEATHER_API_KEY)) {
+            throw new IllegalStateException("requires env var WEATHER_API_KEY");
+        }
+    }
 
     @Override
     public Response apply(Request location) {
