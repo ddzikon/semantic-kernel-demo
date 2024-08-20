@@ -21,8 +21,10 @@ Navigate to project directory and run the app:
 - type the command and click **Send** button
 
 ### Available functions
-Chat should react to instructions telling to:
+Chat should react to prompts asking for:
 - list all persons
 - insert a new person
+  - person model requires values for `name` and `info` properties
+  - chat asked for inserting a new person without providing the data in the same prompt could ask about these values in return (however this does not happen always)
 - find info for particular person by name
 - get current weather in a given location
