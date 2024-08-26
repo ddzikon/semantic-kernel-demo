@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class WeatherClient {
+class WeatherClient {
     private static final String WEATHER_API_KEY;
     private static final String CURRENT_WEATHER_URL = "http://api.weatherapi.com/v1/current.json";
 
