@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.example.agent.AgentModule;
 import org.example.view.ViewController;
 import org.example.view.ViewModule;
 import org.example.model.ModelModule;
@@ -23,7 +24,8 @@ public class Launcher extends Application {
         Injector injector = Guice.createInjector(
                 new ViewModule(),
                 new ViewModelModule(),
-                new ModelModule()
+                new ModelModule(),
+                new AgentModule()
         );
 
         injector.getInstance(Flyway.class).migrate();

@@ -16,22 +16,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AudioChatService {
 
-    private static final String SPRING_AI_OPENAI_API_KEY;
-
-    static {
-        SPRING_AI_OPENAI_API_KEY = System.getenv("SPRING_AI_OPENAI_API_KEY");
-
-        if (SPRING_AI_OPENAI_API_KEY == null || SPRING_AI_OPENAI_API_KEY.isBlank()) {
-            throw new IllegalStateException("missing env var SPRING_AI_OPENAI_API_KEY");
-        }
-    }
-
     private final ChatService chatService;
+    private final OpenAiAudioApi openAiAudioApi;
     private final AudioChatEntryViewModel audioChatEntryViewModel;
 
     public String askGpt(Resource audioFile) {
-        final var openAiAudioApi = new OpenAiAudioApi(SPRING_AI_OPENAI_API_KEY);
-
         final var openAiAudioTranscriptModel = new OpenAiAudioTranscriptionModel(openAiAudioApi);
 
         final var transcriptionOptions = OpenAiAudioTranscriptionOptions.builder()

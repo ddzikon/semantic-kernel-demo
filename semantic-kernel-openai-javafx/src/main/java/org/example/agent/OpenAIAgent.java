@@ -1,16 +1,7 @@
 package org.example.agent;
 
-import com.azure.ai.openai.OpenAIAsyncClient;
-import com.azure.ai.openai.OpenAIClientBuilder;
-import com.azure.core.credential.KeyCredential;
 import com.google.inject.Inject;
-import com.microsoft.semantickernel.Kernel;
-import com.microsoft.semantickernel.orchestration.InvocationContext;
-import com.microsoft.semantickernel.orchestration.ToolCallBehavior;
-import com.microsoft.semantickernel.plugin.KernelPlugin;
-import com.microsoft.semantickernel.plugin.KernelPluginFactory;
 import com.microsoft.semantickernel.services.chatcompletion.AuthorRole;
-import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import com.microsoft.semantickernel.services.chatcompletion.ChatMessageContent;
 import lombok.RequiredArgsConstructor;
@@ -22,38 +13,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class OpenAIAgent {
-    private static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
 
-    static {
-        if (OPENAI_API_KEY == null || OPENAI_API_KEY.isBlank()) {
-            throw new IllegalStateException("requires env var OPENAI_API_KEY");
-        }
-    }
-
-    private final PersonPlugin personPlugin;
-    private final WeatherPlugin weatherPlugin;
+    private final ChatServiceWithFunctions chatServiceWithFunctions;
     private final ChatEntryViewModel chatEntryViewModel;
 
     public String askGpt(String message) {
         log.info("Generating message for the chat: {}", message);
-
-        OpenAIAsyncClient openAIClient = new OpenAIClientBuilder()
-                .credential(new KeyCredential(OPENAI_API_KEY))
-                .buildAsyncClient();
-
-        ChatCompletionService chatCompletionService = ChatCompletionService.builder()
-                .withModelId("gpt-3.5-turbo")
-                .withOpenAIAsyncClient(openAIClient)
-                .build();
-
-        KernelPlugin kernelPersonPlugin = KernelPluginFactory.createFromObject(personPlugin, "personPlugin");
-        KernelPlugin kernelWeatherPlugin = KernelPluginFactory.createFromObject(weatherPlugin, "weatherPlugin");
-
-        Kernel kernel = Kernel.builder()
-                .withAIService(ChatCompletionService.class, chatCompletionService)
-                .withPlugin(kernelPersonPlugin)
-                .withPlugin(kernelWeatherPlugin)
-                .build();
 
         chatEntryViewModel.storeChatEntry(AuthorRole.USER.name(), message);
 
@@ -65,18 +30,9 @@ public class OpenAIAgent {
                 ).toList();
         ChatHistory chatHistory = new ChatHistory(chatEntries);
 
-        InvocationContext invocationContext = InvocationContext.builder()
-                .withToolCallBehavior(ToolCallBehavior.allowAllKernelFunctions(true))
-                .build();
-
         log.info("Sending message, waiting for response...");
-        List<ChatMessageContent<?>> conversation = chatCompletionService.getChatMessageContentsAsync(
-                chatHistory,
-                kernel,
-                invocationContext
-        ).block();
+        ChatMessageContent<?> chatResponse = chatServiceWithFunctions.interact(chatHistory);
 
-        ChatMessageContent<?> chatResponse = conversation.get(conversation.size() - 1);
         String chatResponseContent = chatResponse.getContent();
 
         log.info("Response received {}", chatResponse);

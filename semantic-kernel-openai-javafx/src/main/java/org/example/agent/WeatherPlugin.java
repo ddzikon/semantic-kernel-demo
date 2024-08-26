@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class WeatherPlugin {
+class WeatherPlugin {
 
     private final WeatherClient weatherClient;
 
