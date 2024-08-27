@@ -9,7 +9,7 @@ import org.example.viewmodel.PersonViewModel;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class PersonPlugin {
+public class PersonPlugin {
 
     private final PersonViewModel personViewModel;
 
