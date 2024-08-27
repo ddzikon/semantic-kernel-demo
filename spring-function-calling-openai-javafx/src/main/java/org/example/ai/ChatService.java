@@ -52,6 +52,8 @@ public class ChatService {
                     };
                 }).collect(Collectors.toCollection(ArrayList::new));
 
+        chatHistory.add(new SystemMessage("You are helpful assistant. Before calling a function, that manipulates some data, you will ask the user for confirmation and present the parameters you would like to pass to the function."));
+
         AssistantMessage chatOutput = chatModel.call(new Prompt(chatHistory)).getResult().getOutput();
         log.info("Message sent, awaiting response...");
 
