@@ -29,10 +29,19 @@ public class PersonRepository {
         }
     }
 
-    public List<Person> findByName(String name) {
+    public List<Person> findByFullName(String name) {
         try (Session session = sessionFactory.openSession()) {
-            String query = String.format("from Person where name = %s", name);
-            return session.createQuery(query, Person.class).list();
+            return session.createQuery("from Person where name = :name", Person.class)
+                    .setParameter("name", name)
+                    .list();
+        }
+    }
+
+    public List<Person> findByFirstName(String firstName) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("from Person where name like :firstName", Person.class)
+                    .setParameter("firstName", firstName)
+                    .list();
         }
     }
 }

@@ -31,9 +31,15 @@ public class OpenAIAgent {
                         )
                 ).collect(Collectors.toCollection(ArrayList::new));
 
-        chatEntries.add(new ChatMessageContent(AuthorRole.SYSTEM, "You are helpful assistant. Before calling a function, that manipulates some data, you will ask the user for confirmation and present the parameters you would like to pass to the function."));
+        final int lastMessageIndex = chatEntries.size() - 1;
+        final int systemMessageIndex = Math.max(lastMessageIndex, 0);
+
+        chatEntries.add(systemMessageIndex, new ChatMessageContent(AuthorRole.SYSTEM, "You are helpful assistant. Each action you take that affects other systems or people (for example data manipulation, sending messages, etc.) should be confirmed by the user you assist. You will present the parameters you would like to pass to the function executing the action and ask the user for confirmation. The confirmation is not required for read-only operations."));
 
         ChatHistory chatHistory = new ChatHistory(chatEntries);
+
+        log.warn("CHAT HISTORY:");
+        chatHistory.getMessages().forEach(messageContent -> System.out.println(messageContent.getAuthorRole() + ": " + messageContent.getContent()));
 
         log.info("Sending message, waiting for response...");
         ChatMessageContent<?> chatResponse = chatServiceWithFunctions.interact(chatHistory);

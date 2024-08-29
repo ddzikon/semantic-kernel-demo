@@ -27,9 +27,15 @@ public class PersonViewModel {
         this.peopleStateProperty = FXCollections.observableArrayList(initialPeople);
     }
 
-    public String getPersonInfo(String personName) {
-        return personRepository.findByName(personName).stream()
-                .map(person -> String.format("%s -> %s", person.getName(), person.getInfo()))
+    public String getPersonPreferredWeather(String personName) {
+        return personRepository.findByFullName(personName).stream()
+                .map(person -> String.format("%s -> %s", person.getName(), person.getPreferredWeather()))
+                .collect(Collectors.joining(";\n"));
+    }
+
+    public String getPersonPreferredWeatherByFirstName(String firstName) {
+        return personRepository.findByFirstName(firstName).stream()
+                .map(person -> String.format("%s -> %s", person.getName(), person.getPreferredWeather()))
                 .collect(Collectors.joining(";\n"));
     }
 
@@ -37,8 +43,8 @@ public class PersonViewModel {
         return personRepository.findAll().stream().map(Person::toString).collect(Collectors.joining(", "));
     }
 
-    public String insertNewPerson(String name, String info) {
-        final var newPerson = Person.builder().name(name).info(info).build();
+    public String insertNewPerson(String name, String preferredWeather) {
+        final var newPerson = Person.builder().name(name).preferredWeather(preferredWeather).build();
         final var insertedPerson = personRepository.save(newPerson);
 
         peopleStateProperty.add(insertedPerson);

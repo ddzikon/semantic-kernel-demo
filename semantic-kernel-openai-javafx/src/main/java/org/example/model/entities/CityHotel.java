@@ -18,12 +18,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "person")
-public class Person {
+@Table(name = "city_hotel")
+public class CityHotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    @Column(name = "preferred_weather")
-    private String preferredWeather;
+    @Column(name = "city_name")
+    private String cityName;
+    @Column(name = "hotel_name")
+    private String hotelName;
+    private String email;
 }
