@@ -22,7 +22,7 @@ class ChatServiceWithFunctions {
     private final Kernel kernel;
 
     @Inject
-    public ChatServiceWithFunctions(OpenAIAsyncClient openAIAsyncClient, PersonPlugin personPlugin, WeatherPlugin weatherPlugin) {
+    public ChatServiceWithFunctions(OpenAIAsyncClient openAIAsyncClient, PersonPlugin personPlugin, WeatherPlugin weatherPlugin, AccommodationPlugin accommodationPlugin) {
         this.chatCompletionService = ChatCompletionService.builder()
                 .withModelId("gpt-3.5-turbo")
                 .withOpenAIAsyncClient(openAIAsyncClient)
@@ -34,11 +34,13 @@ class ChatServiceWithFunctions {
 
         KernelPlugin kernelPersonPlugin = KernelPluginFactory.createFromObject(personPlugin, "personPlugin");
         KernelPlugin kernelWeatherPlugin = KernelPluginFactory.createFromObject(weatherPlugin, "weatherPlugin");
+        KernelPlugin kernelAccommodationPlugin = KernelPluginFactory.createFromObject(accommodationPlugin, "accommodationPlugin");
 
         this.kernel = Kernel.builder()
                 .withAIService(ChatCompletionService.class, chatCompletionService)
                 .withPlugin(kernelPersonPlugin)
                 .withPlugin(kernelWeatherPlugin)
+                .withPlugin(kernelAccommodationPlugin)
                 .build();
     }
 

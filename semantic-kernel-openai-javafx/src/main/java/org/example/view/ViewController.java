@@ -38,7 +38,7 @@ public class ViewController implements Initializable {
     @FXML
     private TableColumn<Person, String> personTableNameColumn;
     @FXML
-    private TableColumn<Person, String> personTableInfoColumn;
+    private TableColumn<Person, String> personTablePreferredWeatherColumn;
     @FXML
     private TextArea chatInput;
     @FXML
@@ -68,7 +68,7 @@ public class ViewController implements Initializable {
 
         personTableIdColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getId()));
         personTableNameColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getName()));
-        personTableInfoColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getInfo()));
+        personTablePreferredWeatherColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getPreferredWeather()));
 
         personTable.itemsProperty().bind(new SimpleObjectProperty<>(personViewModel.getPeopleStateProperty()));
     }

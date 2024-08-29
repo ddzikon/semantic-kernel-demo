@@ -14,15 +14,27 @@ public class PersonPlugin {
     private final PersonViewModel personViewModel;
 
     @DefineKernelFunction(
-            name = "getPersonInfo",
-            description = "Get info for the person by person's name.",
+            name = "getPersonPreferredWeather",
+            description = "Get preferred weather for a person by person's full name.",
             returnType = "string"
     )
-    public String getPersonInfo(
-            @KernelFunctionParameter(name = "name", description = "Name of a person.") String name
+    public String getPersonPreferredWeather(
+            @KernelFunctionParameter(name = "fullName", description = "Full name of a person.") String fullName
     ) {
-        log.info("getPersonInfo called with argument: name = {}", name);
-        return personViewModel.getPersonInfo(name);
+        log.info("getPersonPreferredWeather called with argument: fullName = {}", fullName);
+        return personViewModel.getPersonPreferredWeather(fullName);
+    }
+
+    @DefineKernelFunction(
+            name = "getPersonPreferredWeatherByFirstName",
+            description = "Get preferred weather for a person searching the person by first name.",
+            returnType = "string"
+    )
+    public String getPersonPreferredWeatherByFirstName(
+            @KernelFunctionParameter(name = "firstName", description = "First name of a person") String firstName
+    ) {
+        log.info("getPersonPreferredWeatherByFirstName called with argument: firstName = {}", firstName);
+        return personViewModel.getPersonPreferredWeatherByFirstName(firstName);
     }
 
     @DefineKernelFunction(
@@ -41,10 +53,10 @@ public class PersonPlugin {
             returnType = "string"
     )
     public String insertNewPerson(
-            @KernelFunctionParameter(name = "name", description = "Name of a person.") String name,
-            @KernelFunctionParameter(name = "info", description = "Info for a person.") String info
+            @KernelFunctionParameter(name = "name", description = "Full name of a person.") String name,
+            @KernelFunctionParameter(name = "preferredWeather", description = "Preferred weather of a person.") String preferredWeather
     ) {
-        log.info("insertNewPerson called with arguments: name = {}, info = {}", name, info);
-        return personViewModel.insertNewPerson(name, info);
+        log.info("insertNewPerson called with arguments: name = {}, preferredWeather = {}", name, preferredWeather);
+        return personViewModel.insertNewPerson(name, preferredWeather);
     }
 }

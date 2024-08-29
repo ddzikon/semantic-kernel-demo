@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import org.example.model.entities.ChatEntry;
+import org.example.model.entities.CityHotel;
 import org.example.model.entities.Person;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
@@ -23,6 +24,7 @@ public class ModelModule extends AbstractModule {
     public SessionFactory provideSessionFactory() {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Person.class);
+        configuration.addAnnotatedClass(CityHotel.class);
         configuration.addAnnotatedClass(ChatEntry.class);
 
         configuration.setProperty("connection.driver_class", DB_DRIVER);
