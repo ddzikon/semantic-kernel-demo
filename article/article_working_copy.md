@@ -17,23 +17,23 @@ While it's true that many technological advancements have promised to be game-ch
 AI + changes:
 While it's true that many technological advancements have promised to be game-changers, Semantic Kernel and Spring Function Calling stand out by providing an easy way to integrate AI services with minimal setup effort. These frameworks simplify the connection between AI models and existing codebases. This means AI functionalities are more accessible (whether it's chat completion, audio transcription or image generation). Developers can quickly set up AI agents within their systems with next to no effort. And, in case someone would prefer not to rely on corporate models, one has the possibility to use locally hosted models. Both tools come with vendor assurances of being future-proof and offer operations chaining, what allows for more complex and sophisticated AI-driven workflows.
 
-To put this into perspective, let's take a look at concrete examples with a [demo app]().  
-The app has a simple GUI and allows interactions with OpenAI's ChatGPT. It has also a simple, in-memory database.  
+To put this into perspective, let's take a look at concrete examples with a [demo app](https://github.com/ddzikon/semantic-kernel-demo).  
+The app has a simple GUI and lend itself to interactions with OpenAI's ChatGPT. It has also a simple, in-memory database.  
+The data model is as follows:  
+![data model](data_model.jpg)
 
 First demo use case of Semantic Kernel and Spring AI Function Calling allows database manipulation through chat prompts.
-Second one integrates external [Weather API]() enabling ChatGPT to provide current weather information at given location.  
+Second one integrates external [Weather API](https://www.weatherapi.com/) enabling ChatGPT to provide current weather information at given location. 
+Third use case simulates search of accommodation information in a city (as an example of operations chaining, we'll jump to it later).
 
-//TODO find a way to add captions
-
-![Example app - listing records from DB](javafx_list_all.jpg)
-
-![Example app - adding new record to DB](javafx_add_new.png)
+![Example app - listing database entries and adding a new person to the table](javafx_example.jpg)  
+_Demo app. Left panel is chat history, right panel contains person table entries._
 
 **Shall we dive deeper into the nuts and bolts? What's the magic behind the scenes (pun intended)?**
 
 Absolutely! Let's see how these tools are easy in use.
 Both tools work on a similar concept of AI agents (although only in case of Semantic Kernel this exact term is used).  
-First we have to create a wrapper for stuff we'd like to call. A Plugin in Semantic Kernel's terminology, or a function according to Spring AI recommendations:
+First we have to create a wrapper for stuff we'd like to call. A Plugin in Semantic Kernel's terminology, or a function according to Spring AI docs' recommendations:
 <table>
 <tr>
 <td>
@@ -212,6 +212,156 @@ public class ChatService {
 
 And that's it! The agents are ready to serve.
 
+**Somewhere at the beginning _operations chaining_ was mentioned. Are those tools really able to execute tasks consisting of multiple steps?**
+
+Definitely. I've checked it with rather absurd example, but it utilized the Semantic Kernel's potential. Let's take a look at that conversation with the chat:  
+
+> USER: 
+> Hey Chat!   
+> 
+> CHAT: Hello! How can I assist you today?  
+> 
+> USER: The people I have data about in my database would like to go on a trip today. They consider three cities: Madrid, Oslo, Warsaw. Could you help them choose a destination best for most of them? Also, find a hotel in that city and write an email asking about price for one night stay.  
+> 
+> CHAT: Here are the current weather conditions in the three cities considered by your group:  
+> 1. Madrid:  
+>   - Temperature: 19.3°C, Partly cloudy  
+>   - Wind: 15.1 km/h from the North  
+>   - Humidity: 94%  
+> 2. Oslo:  
+>   - Temperature: 13.2°C, Partly cloudy  
+>   - Wind: 31.0 km/h from the Southwest  
+>   - Humidity: 94%  
+> 3. Warsaw:  
+>   - Temperature: 24.1°C, Sunny  
+>   - Wind: 9.0 km/h from the East-Southeast  
+>   - Humidity: 69%  
+> 
+> Based on the preferred weather of the individuals:  
+> - Thomas Anderson and Sam Hall prefer sunny weather.  
+> - Max Rockatansky prefers rainy weather.  
+> 
+> Considering the weather preferences, Warsaw seems to be the best choice as it has sunny weather which is preferred by two individuals. Would you like to proceed with choosing Warsaw as the destination? If so, I can find a hotel in Warsaw and send an email requesting the price for a one-night stay.  
+> 
+> USER: Warsaw sounds great!  
+> 
+> CHAT: I have found a hotel in Warsaw called "Neat Hotel" with the email address neat@hotel.pl.  
+> 
+> Next, I will draft an email to inquire about the price for a one-night stay at the Neat Hotel. Here is the draft of the email:  
+> ```  
+> Subject: Inquiry About One-Night Stay Price  
+> 
+> Dear Neat Hotel,  
+> 
+> I hope this message finds you well. We are planning a trip to Warsaw and are interested in staying at your hotel for one night. Could you please provide information about the price for a one-night stay for our group?  
+> 
+> Looking forward to your prompt response.  
+> 
+> Best regards,  
+> [Your Name]  
+> ```  
+> 
+> Would you like me to send this email to enquire about the price for a one-night stay at the Neat Hotel in Warsaw?  
+> 
+> USER: Sign the email as Thomas Anderson and send it.  
+> 
+> CHAT: The email has been sent to Neat Hotel in Warsaw on behalf of Thomas Anderson. They should get back to you soon with information about the price for a one-night stay.  
+> 
+> If you need any further assistance or have any other requests, feel free to let me know!  
+
+This conversation is a result of single prompt - a question about advice regarding trip destination. Semantic Kernel and chat were able to [plan](https://learn.microsoft.com/en-us/semantic-kernel/concepts/planning?pivots=programming-language-java) the steps, execute them and adjust the actions to the user's instructions along the way.  
+When we take a look at the demo app logs produced during the conversation, we'll notice the required functions were called automatically.  
+<details>
+<summary>demo app logs</summary>
+
+// TODO perhaps it would be best to add more crlfs and colour significant parts
+```
+09:27:48.761 [JavaFX Application Thread] INFO  org.example.view.ViewController - Send button clicked, message: 
+Hey Chat!
+09:27:48.780 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Sending message, waiting for response...
+09:27:50.017 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Response received:
+Hello! How can I assist you today?
+09:28:09.282 [JavaFX Application Thread] INFO  org.example.view.ViewController - Send button clicked, message: 
+The people I have data about in my database would like to go on a trip today. They consider three cities: Madrid, Oslo, Warsaw. Could you help them choose a destination best for most of them? Also, find a hotel in that city and write an email asking about price for one night stay.
+09:28:09.286 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Sending message, waiting for response...
+09:28:10.041 [boundedElastic-1] INFO  org.example.agent.PersonPlugin - getAllPeople called
+09:28:11.493 [boundedElastic-1] INFO  org.example.agent.WeatherPlugin - getCurrentWeather called with argument: location = Madrid
+09:28:11.493 [boundedElastic-1] INFO  org.example.agent.WeatherClient - Requesting weather for location Madrid...
+09:28:11.670 [boundedElastic-1] INFO  org.example.agent.WeatherClient - Current weather for location Madrid:
+{"location":{"name":"Madrid","region":"Madrid","country":"Spain","lat":40.4,"lon":-3.68,"tz_id":"Europe/Madrid","localtime_epoch":1724916334,"localtime":"2024-08-29 09:25"},"current":{"last_updated_epoch":1724915700,"last_updated":"2024-08-29 09:15","temp_c":19.3,"temp_f":66.7,"is_day":1,"condition":{"text":"Partly cloudy","icon":"//cdn.weatherapi.com/weather/64x64/day/116.png","code":1003},"wind_mph":9.4,"wind_kph":15.1,"wind_degree":360,"wind_dir":"N","pressure_mb":1018.0,"pressure_in":30.06,"precip_mm":0.0,"precip_in":0.0,"humidity":94,"cloud":50,"feelslike_c":19.3,"feelslike_f":66.7,"windchill_c":24.8,"windchill_f":76.6,"heatindex_c":25.8,"heatindex_f":78.5,"dewpoint_c":15.0,"dewpoint_f":58.9,"vis_km":10.0,"vis_miles":6.0,"uv":6.0,"gust_mph":13.9,"gust_kph":22.3}}
+09:28:11.672 [boundedElastic-2] INFO  org.example.agent.WeatherPlugin - getCurrentWeather called with argument: location = Oslo
+09:28:11.672 [boundedElastic-2] INFO  org.example.agent.WeatherClient - Requesting weather for location Oslo...
+09:28:11.720 [boundedElastic-2] INFO  org.example.agent.WeatherClient - Current weather for location Oslo:
+{"location":{"name":"Oslo","region":"Oslo","country":"Norway","lat":59.92,"lon":10.75,"tz_id":"Europe/Oslo","localtime_epoch":1724916334,"localtime":"2024-08-29 09:25"},"current":{"last_updated_epoch":1724915700,"last_updated":"2024-08-29 09:15","temp_c":13.2,"temp_f":55.8,"is_day":1,"condition":{"text":"Partly cloudy","icon":"//cdn.weatherapi.com/weather/64x64/day/116.png","code":1003},"wind_mph":19.2,"wind_kph":31.0,"wind_degree":230,"wind_dir":"SW","pressure_mb":1005.0,"pressure_in":29.68,"precip_mm":0.0,"precip_in":0.0,"humidity":94,"cloud":75,"feelslike_c":13.7,"feelslike_f":56.6,"windchill_c":12.1,"windchill_f":53.7,"heatindex_c":11.8,"heatindex_f":53.2,"dewpoint_c":8.9,"dewpoint_f":48.0,"vis_km":10.0,"vis_miles":6.0,"uv":3.0,"gust_mph":23.7,"gust_kph":38.2}}
+09:28:11.721 [boundedElastic-1] INFO  org.example.agent.WeatherPlugin - getCurrentWeather called with argument: location = Warsaw
+09:28:11.721 [boundedElastic-1] INFO  org.example.agent.WeatherClient - Requesting weather for location Warsaw...
+09:28:11.766 [boundedElastic-1] INFO  org.example.agent.WeatherClient - Current weather for location Warsaw:
+{"location":{"name":"Warsaw","region":"","country":"Poland","lat":52.25,"lon":21.0,"tz_id":"Europe/Warsaw","localtime_epoch":1724916335,"localtime":"2024-08-29 09:25"},"current":{"last_updated_epoch":1724915700,"last_updated":"2024-08-29 09:15","temp_c":24.1,"temp_f":75.4,"is_day":1,"condition":{"text":"Sunny","icon":"//cdn.weatherapi.com/weather/64x64/day/113.png","code":1000},"wind_mph":5.6,"wind_kph":9.0,"wind_degree":120,"wind_dir":"ESE","pressure_mb":1021.0,"pressure_in":30.15,"precip_mm":0.0,"precip_in":0.0,"humidity":69,"cloud":0,"feelslike_c":24.8,"feelslike_f":76.7,"windchill_c":27.9,"windchill_f":82.3,"heatindex_c":27.8,"heatindex_f":82.0,"dewpoint_c":13.0,"dewpoint_f":55.4,"vis_km":10.0,"vis_miles":6.0,"uv":7.0,"gust_mph":6.7,"gust_kph":10.8}}
+09:28:15.243 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Response received:
+Here are the current weather conditions in the three cities considered by your group:
+1. Madrid:
+   - Temperature: 19.3°C, Partly cloudy
+   - Wind: 15.1 km/h from the North
+   - Humidity: 94%
+2. Oslo:
+   - Temperature: 13.2°C, Partly cloudy
+   - Wind: 31.0 km/h from the Southwest
+   - Humidity: 94%
+3. Warsaw:
+   - Temperature: 24.1°C, Sunny
+   - Wind: 9.0 km/h from the East-Southeast
+   - Humidity: 69%
+
+Based on the preferred weather of the individuals:
+- Thomas Anderson and Sam Hall prefer sunny weather.
+- Max Rockatansky prefers rainy weather.
+
+Considering the weather preferences, Warsaw seems to be the best choice as it has sunny weather which is preferred by two individuals. Would you like to proceed with choosing Warsaw as the destination? If so, I can find a hotel in Warsaw and send an email requesting the price for a one-night stay.
+09:28:43.461 [JavaFX Application Thread] INFO  org.example.view.ViewController - Send button clicked, message: 
+Warsaw sounds great!
+09:28:43.469 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Sending message, waiting for response...
+09:28:44.428 [boundedElastic-1] INFO  o.example.agent.AccommodationPlugin - findHotelInCity called with cityName: Warsaw
+09:28:45.454 [boundedElastic-1] INFO  o.example.agent.AccommodationPlugin - getHotelEmailAddress called with hotelName: Neat Hotel
+09:28:48.159 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Response received:
+  have found a hotel in Warsaw called "Neat Hotel" with the email address neat@hotel.pl.
+
+Next, I will draft an email to inquire about the price for a one-night stay at the Neat Hotel. Here is the draft of the email:
+
+Subject: Inquiry About One-Night Stay Price
+
+Dear Neat Hotel,
+
+I hope this message finds you well. We are planning a trip to Warsaw and are interested in staying at your hotel for one night. Could you please provide information about the price for a one-night stay for our group?
+
+Looking forward to your prompt response.
+
+Best regards,
+[Your Name]
+
+
+Would you like me to send this email to enquire about the price for a one-night stay at the Neat Hotel in Warsaw?
+09:29:30.406 [JavaFX Application Thread] INFO  org.example.view.ViewController - Send button clicked, message: 
+Sign the email as Thomas Anderson and send it.
+09:29:30.412 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Sending message, waiting for response...
+09:29:32.356 [boundedElastic-1] INFO  o.example.agent.AccommodationPlugin - sendEmail called with email: neat@hotel.pl
+message: Subject: Inquiry About One-Night Stay Price
+
+Dear Neat Hotel,
+
+I hope this message finds you well. We are planning a trip to Warsaw and are interested in staying at your hotel for one night. Could you please provide information about the price for a one-night stay for our group?
+
+Looking forward to your prompt response.
+
+Best regards,
+Thomas Anderson
+09:29:33.672 [JavaFX Application Thread] INFO  org.example.agent.OpenAIAgent - Response received:
+The email has been sent to Neat Hotel in Warsaw on behalf of Thomas Anderson. They should get back to you soon with information about the price for a one-night stay.
+
+If you need any further assistance or have any other requests, feel free to let me know!
+```
+
+</details>
+
 **What's the takeaway from all these details?**
 
 AI:  
@@ -237,11 +387,12 @@ They don’t just make AI functionalities accessible; they also open up new poss
 The ability to chain operations and integrate with various AI models—whether hosted locally or in the cloud—gives developers a powerful toolkit to create sophisticated, responsive, and future-proof applications.
 
 AI2 + changes:  
-The essence of these technical details reveals a broader impact: how such tools are reshaping the developer experience. Integrating AI with code is more accessible and streamlined. Both mentioned earlier libraries provide structured ways to wrap your code and make it callable by AI models. Embedding an AI-driven functionalities into an application requires minimal effort.  
+The essence of the technical details reveals a broader impact: how such tools are reshaping the developer experience. Integrating AI with code is more accessible and streamlined. Both mentioned earlier libraries provide structured ways to wrap your code and make it callable by AI models. Embedding an AI-driven functionalities into an application requires minimal effort.  
 
 These tools also open up new possibilities for innovation in software development. AI isn't just an add-on, it becomes an integral part of an application, making it more intelligent and ensuring that it can evolve with minimal friction. 
 
 Moreover, AI models gain real time processing capabilities. Each model is trained on data gathered to a certain moment in time. Thanks to these tools one can bind real time data sources to a model. With each inquiry model can reach this data and adjust its response accordingly to incoming pieces of information.
+Considering also the operation chaining, these tools pave the path to movie-like AI assistants.
 
 In short, the takeaway here is that these aren’t just theoretical advancements — they are ready-to-use tools that can ease the way developers approach AI, making it a seamless experience.
 
@@ -270,7 +421,7 @@ The Weather API didn't recognize the city name with polish letters and returned 
 I've repeated the prompt for Spring AI Function Calling demo app, however in this case it didn't handle it well and returned the error response.
 
 Another example would be asking a follow-up question in case of doubt or lacking data.  
-The demo app allows manipulating a simple `Person` table using chat prompts. Inserting a new person requires certain data - a person's `name` and `info`. When I asked about inserting a new person without providing the details, chat asked in return about the missing pieces of information. New database entries were created after I clarified it.
+The demo app allows manipulating a simple `Person` table using chat prompts. Inserting a new person requires certain data - a person's `name` and `preferred_weather`. When I asked about inserting a new person without providing the details, chat asked in return about the missing pieces of information. New database entries were created after I clarified it.
 
 **These are rather positive surprises. I guess there were also some inconvenient ones?**  
 AI: **Those are great outcomes, but were there any hurdles or challenges that caught you off guard?**
@@ -286,13 +437,11 @@ This implies two things:
 **Any potential solutions?**
 
 System messages could come handy here. It is a part of a prompt that tells the chat how to behave. Semantic Kernel documentation even calls it "a persona".  
-The demo app has a use case that may be seen as dangerous when exposed to random manipulation, as it can introduce inconsistent, not reality matching state. There is a function allowing the chat to insert a new person to the database. To make it more secure, i've tried with following system message:  
+You've probably noticed that in the attached screenshot of the demo app the chat asks for confirmation before executing a function. This behavior is a result of a following system message:  
 
 `You are helpful assistant. Before calling a function, that manipulates some data, you will ask the user for confirmation and present the parameters you would like to pass to the function.`  
 
-And here is the outcome:
-![system message effect](system_message.png)
-Nonetheless, there is a key takeaway - system message has to be both concise and precise. It took a few iterations to get it right. This also highlight the importance of prompt engineering.
+Nonetheless, there is a key takeaway - best results provide system messages that are both concise and precise. It took a few iterations to get this one right. This also highlights the importance of prompt engineering. However, that would take another article to elaborate.
 
 **So, how do all these pieces come together in the bigger picture?**
 
