@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
@@ -12,44 +11,39 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="544.0" prefWidth="734.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <VBox alignment="CENTER" layoutX="258.0" layoutY="-80.0" prefHeight="482.0" prefWidth="734.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <cursor>
-            <Cursor fx:constant="DEFAULT" />
-         </cursor>
-         <children>
-            <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-              <items>
-                  <ListView fx:id="chatHistory" />
-                  <ListView fx:id="audioChatHistory" />
-              </items>
-            </SplitPane>
-            <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="747.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <TextArea fx:id="chatInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="235.0" prefWidth="599.0" promptText="Type a message to the chat here...." wrapText="true" HBox.hgrow="ALWAYS" />
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Button fx:id="recordButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Record" VBox.vgrow="ALWAYS">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="sendButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Send" VBox.vgrow="ALWAYS">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
-                        </Button>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </children>
+   <SplitPane dividerPositions="0.8" orientation="VERTICAL" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <SplitPane dividerPositions="0.5" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" VBox.vgrow="ALWAYS">
+            <AnchorPane>
+               <ListView fx:id="chatHistory" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            </AnchorPane>
+            <AnchorPane>
+               <ListView fx:id="audioChatHistory" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            </AnchorPane>
+         </SplitPane>
+      </AnchorPane>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <HBox alignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <TextArea fx:id="chatInput" promptText="Type a message to the chat here...." wrapText="true" HBox.hgrow="ALWAYS" />
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+               <Button fx:id="recordButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Record" VBox.vgrow="ALWAYS">
+                  <VBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </VBox.margin>
+                  <font>
+                     <Font size="24.0" />
+                  </font>
+               </Button>
+               <Button fx:id="sendButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Send" VBox.vgrow="ALWAYS">
+                  <font>
+                     <Font size="24.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </VBox.margin>
+               </Button>
+            </VBox>
+         </HBox>
+      </AnchorPane>
+   </SplitPane>
 </AnchorPane>
