@@ -362,6 +362,19 @@ If you need any further assistance or have any other requests, feel free to let 
 
 </details>
 
+**If only it could respond to voice commands... one could prepare oneself an AI voice assistant.**
+
+AI:  
+Well, it just so happens that's entirely possible! While the Java library of Semantic Kernel doesn't yet support Audio Models, Spring AI fills that gap quite effectively. In fact, one of the demo app's features showcases this capability. It utilizes an audio transcription model to capture and transcribe the user's voice input, which is then seamlessly passed to the chat completion service. With the right setup, this could very well serve as the foundation for an AI voice assistant, blending voice recognition with intelligent responses.
+
+AI + changes:  
+Well, it just so happens that's entirely possible! At least in case of Spring AI. The Java library of Semantic Kernel does not support audio models yet. This gap is for now filled by Spring AI.  
+
+In fact, one of the demo app's features showcases this capability. The demo subproject exploring the possibilities of Spring AI Function Calling utilizes audio transcription model to recognize user's voice input. Transcribed text is later passed to the chat completion service. With the right setup, this could very well serve as the foundation for an AI voice assistant, blending voice recognition with intelligent responses.
+
+![voice handling example](voice_question.jpg)  
+_Left pane contains text chat history, right pane contains responses from audio transcription model. Press **Record** button, ask a question, press **Stop** and the app will send transcribed audio to the text chat completion service_. 
+
 **What's the takeaway from all these details?**
 
 AI:  
@@ -400,7 +413,7 @@ In short, the takeaway here is that these aren’t just theoretical advancements
 
 Certainly! Tinkering with a new technology always is often full of surprises.  
 
-// TODO confirm whether it's chat or library
+// TODO confirm whether it's chat or library  
 The most interesting in my opinion was ability to autocorrect parameters passed to function. I've encountered it when I was experimenting with Semantic Kernel.
 I asked chat _What's the current weather in Wrocław?_, where the city name _Wrocław_ contains polish letter **ł**. 
 Let's take a look at logs from that event:  
