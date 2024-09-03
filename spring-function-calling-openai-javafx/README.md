@@ -26,4 +26,12 @@ Navigate to project directory and run the app:
   - received transcription will be sent to chat again as a text prompt
 
 ### Available functions
+- list all persons
+- insert a new person
+  - person model requires values for `name` and `preferred_weather` properties
+  - chat asked for inserting a new person without providing the data in the same prompt could ask about these values in return (however this does not happen always)
+- find preferred weather of particular person by name
 - get current weather in a given location
+- find a hotel in a given city (hardcoded data)
+- find hotel's email address (hardcoded data)
+- send email to the hotel (hardcoded data)
