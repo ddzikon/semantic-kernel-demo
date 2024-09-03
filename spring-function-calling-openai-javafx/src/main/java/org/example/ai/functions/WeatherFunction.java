@@ -1,7 +1,8 @@
-package org.example.ai;
+package org.example.ai.functions;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.ai.WeatherClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +11,10 @@ import java.util.function.Function;
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-class WeatherFunction implements Function<WeatherFunction.Request, WeatherFunction.Response> {
+public class WeatherFunction implements Function<WeatherFunction.Request, WeatherFunction.Response> {
 
     public static final String FUNCTION_NAME = "currentWeather";
+    public static final String FUNCTION_DESCRIPTION = "Get the current weather in location";
 
     public record Request(String location) {}
     public record Response(String output) {}
