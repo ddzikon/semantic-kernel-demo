@@ -33,9 +33,9 @@ public class AccommodationPlugin {
 
     @DefineKernelFunction(
             name = "getHotelEmailAddress",
-            description = "Get email adress of a hotel.",
+            description = "Get email address of a hotel.",
             returnType = "string",
-            returnDescription = "Email adress of a hotel."
+            returnDescription = "Email address of a hotel."
     )
     public String getHotelEmailAddress(
             @KernelFunctionParameter(name = "hotelName", description = "Name of a hotel to get its email address.") String hotelName
