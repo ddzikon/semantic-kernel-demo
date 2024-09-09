@@ -32,8 +32,8 @@ _Demo app. Left panel is chat history, right panel contains person table entries
 **Shall we dive deeper into the nuts and bolts? What's the magic behind the scenes (pun intended)?**
 
 Absolutely! Let's see how these tools are easy in use.
-Both tools work on a similar concept of AI agents (although only in case of Semantic Kernel this exact term is used).  
-First we have to create a wrapper for stuff we'd like to call. A Plugin in Semantic Kernel's terminology, or a function according to Spring AI docs' recommendations:
+Both tools work on a similar concept of AI agents (although only Semantic Kernel specifically uses this term). The AI models do not execute the code directly. Instead, they are able to decide when a function needs to be called and what generate structured JSON outputs detailing the function and its arguments. Mentioned AI agents interpret these JSONs and trigger the respective code, acting as as a bridge between the model's reasoning and the actual execution.  
+When creating an agent, first step is to create a wrapper for the functionality we'd like to call. A [Plugin](https://learn.microsoft.com/en-us/semantic-kernel/concepts/plugins/?pivots=programming-language-java) in Semantic Kernel's terminology, or a function according to [Spring AI docs'](https://docs.spring.io/spring-ai/reference/api/chat/functions/openai-chat-functions.html#_quick_start) recommendations:
 <table>
 <tr>
 <td>
@@ -68,38 +68,35 @@ class WeatherPlugin {
 </td>
 <td>
 Spring AI
-                
+
 ```java
-class WeatherFunction implements Function<WeatherFunction.Request, WeatherFunction.Response> {
+class WeatherFunction implements Function<WeatherFunction.Request, String> {
 
     public static final String FUNCTION_NAME = "currentWeather";
+    public static final String FUNCTION_DESCRIPTION = "Get the current weather in location";
     
     // 1
     public record Request(String location) {}
-    public record Response(String output) {}
     
     private final WeatherClient weatherClient;
     
     public WeatherFunction(WeatherClient weatherClient) {
         this.weatherClient = weatherClient;
     }
-
+    
     @Override
-    public Response apply(Request request) {
-        final var weatherResponse = weatherClient.getCurrent(request.location);
-
-        return new Response(weatherResponse);
+    public String apply(Request request) {
+        return weatherClient.getCurrent(request.location);
     }
 }
 ```
 
-// TODO confirm it
-1. Unfortunately, Spring's `FunctionCallbackWrapper` exposing the function to the model operates on wrappers of simple types, hence `Request` and `Response` records were created.
+1. Unfortunately, Spring's `FunctionCallbackWrapper` exposing the function to the model [enforces use of wrapper objects for input types](https://github.com/spring-projects/spring-ai/blob/5b6a60db9a80514f9039427cf4744a43f15a68b2/spring-ai-core/src/main/java/org/springframework/ai/model/function/FunctionCallbackWrapper.java#L147-L150) - they library creates JSON schemas for them by default and passes them to the chat, so it can structure the input parameters. This might be handy when working with complex objects, but for simple types generates unnecessary overhead.  
 </td>
 </tr>
 </table>
 
-Having the code wrapped by tool's respective components it is time to make it callable by chat services.  
+Having the code wrapped by tool's respective components it is time to make it recognizable by chat services.  
 This means passing the plugin / function to respective configuration objects.
 
 <table>
@@ -154,7 +151,7 @@ class ChatServiceWithFunctions {
 1. `ChatCompletionService` is a main object allowing interactions with the chat, it also holds configuration related to model version and API keys.
 2. `InvocationContext` enables use of kernel functions, meaning chat will be able to call the code.
 3. `KernelPlugin` is a plugin object for Semantic Kernel that holds information about callable methods.
-4. `Kernel` contains Semantic Kernel state. // TODO add details
+4. `Kernel` is the central component of the library. Simply put it is a container managing plugins required for the application.
 5. Interactions with chat happen with use of `ChatCompletionService`. Chat knows about available functions through passed `Kernel` object. Current prompt is sent together with whole `ChatHistory`, so the chat knows the conversation context.
 </td>
 <td>
@@ -176,7 +173,7 @@ class OpenAiConfigurationProvider {
                 .withFunctionCallbacks(List.of(
                                 new FunctionCallbackWrapper.Builder<>(weatherFunction)
                                         .withName(WeatherFunction.FUNCTION_NAME)
-                                        .withDescription("Get the current weather in location")
+                                        .withDescription(WeatherFunction.FUNCTION_DESCRIPION)
                                         .build()
                         )
                 )
@@ -248,7 +245,7 @@ Definitely. I've checked it with rather absurd example, but it utilized the Sema
 > CHAT: I have found a hotel in Warsaw called "Neat Hotel" with the email address neat@hotel.pl.  
 > 
 > Next, I will draft an email to inquire about the price for a one-night stay at the Neat Hotel. Here is the draft of the email:  
-> ```  
+> 
 > Subject: Inquiry About One-Night Stay Price  
 > 
 > Dear Neat Hotel,  
@@ -258,8 +255,7 @@ Definitely. I've checked it with rather absurd example, but it utilized the Sema
 > Looking forward to your prompt response.  
 > 
 > Best regards,  
-> [Your Name]  
-> ```  
+> \[Your Name\]  
 > 
 > Would you like me to send this email to enquire about the price for a one-night stay at the Neat Hotel in Warsaw?  
 > 
@@ -362,6 +358,8 @@ If you need any further assistance or have any other requests, feel free to let 
 
 </details>
 
+Equivalent example in Spring AI Functions Calling works in a very similar way.
+
 **If only it could respond to voice commands... one could prepare oneself an AI voice assistant.**
 
 AI:  
@@ -370,10 +368,10 @@ Well, it just so happens that's entirely possible! While the Java library of Sem
 AI + changes:  
 Well, it just so happens that's entirely possible! At least in case of Spring AI. The Java library of Semantic Kernel does not support audio models yet. This gap is for now filled by Spring AI.  
 
-In fact, one of the demo app's features showcases this capability. The demo subproject exploring the possibilities of Spring AI Function Calling utilizes audio transcription model to recognize user's voice input. Transcribed text is later passed to the chat completion service. With the right setup, this could very well serve as the foundation for an AI voice assistant, blending voice recognition with intelligent responses.
+In fact, one of the demo app's features showcases this capability. The demo subproject exploring the possibilities of Spring AI Function Calling utilizes audio transcription model to recognize user's voice input. Transcribed text is later passed to the chat completion service. With the right setup, this could very well serve as the foundation for an AI voice assistant, blending voice recognition with intelligent responses.  
 
 ![voice handling example](voice_question.jpg)  
-_Left pane contains text chat history, right pane contains responses from audio transcription model. Press **Record** button, ask a question, press **Stop** and the app will send transcribed audio to the text chat completion service_. 
+_Left pane contains text chat history, right pane contains responses from audio transcription model. Press **Record** button, ask a question, press **Stop** and the app will send transcribed audio to the text chat completion service_.  
 
 **What's the takeaway from all these details?**
 
@@ -411,9 +409,8 @@ In short, the takeaway here is that these aren’t just theoretical advancements
 
 **Were there any surprises you encountered while building the demo app using these tools?**
 
-Certainly! Tinkering with a new technology always is often full of surprises.  
+Certainly! Tinkering with a new technology is often full of surprises.  
 
-// TODO confirm whether it's chat or library  
 The most interesting in my opinion was ability to autocorrect parameters passed to function. I've encountered it when I was experimenting with Semantic Kernel.
 I asked chat _What's the current weather in Wrocław?_, where the city name _Wrocław_ contains polish letter **ł**. 
 Let's take a look at logs from that event:  
@@ -459,7 +456,7 @@ Nonetheless, there is a key takeaway - best results provide system messages that
 **So, how do all these pieces come together in the bigger picture?**
 
 When we take a look from broader perspective, it seems clear that tools like Semantic Kernel and Spring AI Function Calling are more than just new additions to the developer's toolkit. They represent a shift in how we can integrate AI into everyday applications. These tools reduce the effort to leverage AI capabilities in either new or already existing codebases.  
-The seamless integration those tools offer, whether through real-time data processing or the ability to handle complex workflows, marks that AI is nt just an isolated feature - it could become core part of how software operates and interacts with users.  
+The seamless integration those tools offer, whether through real-time data processing or the ability to handle complex workflows, marks that AI is not just an isolated feature - it could become core part of how software operates and interacts with users.  
 The AI itself has tremendous potential, however while working with solely it, we encounter similar challenges. These challenges are being constantly addressed and the technology is more and more mature with each day. This means there already are some good practices determined that allow to face the challenges effectively.  
 In essence, these advancements bring us closer to a future where AI is not just a buzzword, but a practical, integrated component of software development, transforming how we build, interact with and evolve our applications.
 
