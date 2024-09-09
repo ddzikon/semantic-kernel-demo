@@ -15,7 +15,7 @@ Check each subproject's `README.md` file for details:
 
 Using demos 2 & 4 one can talk with ChatGPT and ask about:  
 - providing list of all persons (from the attached database)
-- get info for particular person (by name)
+- get preferred weather of a particular person (by name)
 - store new person in the database
 - get current weather in a given location
 
